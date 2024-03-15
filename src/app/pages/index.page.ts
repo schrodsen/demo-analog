@@ -9,18 +9,22 @@ import { load } from './index.server';
 import { DynamicPageComponent } from '../components/dynamic-page/dynamic-page.component';
 import { DynamicComponentModel } from '../services/model/dynamic-page.model';
 import { RouteResolverService } from '../services/route-resolver.service';
+import { HeaderComponent } from '../components/header/header.component';
+import { FooterComponent } from '../components/footer/footer.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   template: `
+    <app-header></app-header>
     <app-dynamic-page [components]="this.components" />
-
-    <a href="/about">To About</a>
+    <app-footer></app-footer>
   `,
   styleUrl: '../css/index.page.css',
   imports: [
     DynamicPageComponent,
+    HeaderComponent,
+    FooterComponent,
   ],
 })
 export default class HomeComponent {
@@ -42,7 +46,6 @@ export default class HomeComponent {
       this.routeResolverService.mapPageConfigurationToDynamicPageModel(pageData)
           .pipe(
             map(pageModel => {
-              console.log(pageModel);
               this.pageTitle.setTitle(pageModel.title);
               this.components = pageModel.components;
               return pageModel.components;
