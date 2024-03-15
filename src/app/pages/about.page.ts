@@ -1,13 +1,19 @@
 import { RouteMeta } from '@analogjs/router';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterLink, RouterStateSnapshot } from '@angular/router';
 import { MetadataRouteResolverService } from './../services/metadata-route-resolver.service';
+import { PlatformService } from '../services/platform.service';
 
 export const routeMeta: RouteMeta = {
-  providers: [MetadataRouteResolverService],
-  meta: (routeSnapshot: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return MetadataRouteResolverService.getMetaByUrl(state.url);
-    },
+  meta: async (route, state) => {
+    const platform = inject(PlatformService);
+
+    if (platform.isServer) {
+      const resolverService = inject(MetadataRouteResolverService);
+      return await resolverService.getMetaByUrl(state.url);
+    }
+    return [];
+  }
 };
 
 @Component({
@@ -17,7 +23,7 @@ export const routeMeta: RouteMeta = {
     <h2>About me</h2>
 
     <p>
-      <a routerLink="/">Home</a>
+      <a routerLink="/"> To Home</a>
     </p>
   `,
   styleUrl: '../css/about.page.css',

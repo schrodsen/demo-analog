@@ -1,90 +1,112 @@
 import { MetaTag } from '@analogjs/router';
-import { Injectable, inject } from '@angular/core';
-import { MetaFakerService } from './faker/meta-faker.service';
-import { MetaTagModel } from './model/meta-tag.model';
+import { Inject, Injectable, inject } from '@angular/core';
+import { MetaDefinition } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
+import { lastValueFrom, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators'
+import { DOCUMENT } from '@angular/common';
+import { PlatformService } from './platform.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetadataRouteResolverService {
 
-  static getMetaByUrl(url: string) : MetaTag[] {
+  platform = inject(PlatformService);
+  httpClient = inject(HttpClient);
 
-    const resolverService = inject(MetadataRouteResolverService);
-    return resolverService.getMeta(url);
+  constructor(@Inject(DOCUMENT) private doc: Document) {
   }
 
-  apiService = inject(MetaFakerService);
+  async getMetaByUrl(url: string) : Promise<MetaTag[]> {
 
-  defaultRouteMeta: MetaTag[] = [
-      {
-        name: 'whatever',
-        content: 'Description of the page',
-      },
-      {
-        name: 'author',
-        content: 'Mars Boys',
-      },
-      {
-        property: 'og:title',
-        content: 'Title of the page',
-      },
-      {
-        property: 'og:description',
-        content: 'Some catchy description',
-      },
-      {
-        property: 'og:image',
-        content: 'https://somepage.com/someimage.png',
-      },
-    ];
+    const apiUrl = `https://vhdev.proxy.beeceptor.com/seo?route=${url}`;
+    const metadata = await lastValueFrom(this.httpClient.get<MetaDefinition[]>(apiUrl)
+      .pipe(
+        map((value) => {
+          return this.generateMeta(value);
+        }),
+        catchError(() => {
+          const emptyArray: MetaTag[] = [];
+          return of(emptyArray);
+        })
+      )
+    );
 
-constructor() { }
+    this.addLinks();
 
-    getMeta(url: string) : MetaTag[] {
-      const metadata = this.apiService.getMeta(url);
-      return this.generateMeta(metadata);
+    return metadata;
+  }
+
+  addLinks() {
+
+    const lang = ['de', 'ch', 'at'];
+
+    // add canonical link
+    const canonicalLink : HTMLLinkElement = this.createCanonicalLink();
+    const alternateLinks : HTMLLinkElement[] = lang.map((n) =>
+      this.createAlternateLink());
+
+    for (let link of alternateLinks) {
+      link.href = 'https://www.reisenaktuell.com';
+      link.hreflang = 'de'
     }
+  }
 
-    private generateMeta(metaTags: MetaTagModel[]) : MetaTag[] {
+  private createAlternateLink(): HTMLLinkElement {
+    const _link = this.doc.createElement('link');
+    _link.setAttribute('rel', 'alternate');
+    this.doc.head.appendChild(_link);
+    return _link;
+  }
 
-      const meta : MetaTag[] = [];
-      for(let tag of metaTags) {
+  private createCanonicalLink(): HTMLLinkElement {
+    const _canonicalLink = this.doc.createElement('link');
+    _canonicalLink.setAttribute('rel', 'canonical');
+    _canonicalLink.href = 'https://www.reisenaktuell.com';
+    this.doc.head.appendChild(_canonicalLink);
 
-        if (tag.property !== null && tag.content !== null) {
-          meta.push({
-            property: tag.property as string,
-            content: tag.content as string,
-          });
-          continue;
-        }
+    return _canonicalLink;
+  }
 
-        if (tag.name !== null && tag.content !== null) {
-          meta.push({
-            name: tag.name as string,
-            content: tag.content as string,
-          });
-          continue;
-        }
+  private generateMeta(metaTags: MetaDefinition[]) : MetaTag[] {
 
-        if (tag.httpEquiv !== null && tag.content !== null) {
-          meta.push({
-            httpEquiv: tag.name as string,
-            content: tag.content as string,
-          });
-          continue;
-        }
+    const meta : MetaTag[] = [];
 
-        if (tag.charset !== null) {
-          meta.push({
-            charset: tag.charset as string,
-          });
-          continue;
-        }
+    for(let tag of metaTags) {
+
+      if (tag.property !== null && tag.content !== undefined) {
+        meta.push({
+          property: tag.property as string,
+          content: tag.content as string,
+        });
+        continue;
       }
 
-      return meta;
+      if (tag.name !== null && tag.content !== undefined) {
+        meta.push({
+          name: tag.name as string,
+          content: tag.content as string,
+        });
+        continue;
+      }
+
+      if (tag.httpEquiv !== null && tag.content !== undefined) {
+        meta.push({
+          httpEquiv: tag.name as string,
+          content: tag.content as string,
+        });
+        continue;
+      }
+
+      if (tag.charset !== null) {
+        meta.push({
+          charset: tag.charset as string,
+        });
+        continue;
+      }
     }
+
+    return meta;
+  }
 }
-
-

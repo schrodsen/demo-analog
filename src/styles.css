@@ -1,3 +1,5 @@
+@import "./assets/font/style.scss";
+
 /* Tailwind directives  */
 @tailwind base;
 @tailwind components;
@@ -83,10 +85,28 @@ button:focus-visible {
   }
 }
 
-.d-flex {
+.flex {
   display: flex;
 }
 
-.justify-content-center {
-  justify-content: center;
+.grid {
+  display: grid;
+}
+
+.centered {
+  place-items: center;
+}
+
+.flex-container-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-container-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-item-even {
+  flex: 1 1 0px;
 }

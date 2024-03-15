@@ -1,38 +1,56 @@
+
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Title } from '@angular/platform-browser';
-import { injectLoad } from '@analogjs/router';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { load } from './index.server';
-import { DynamicPageComponent } from '../components/dynamic-page/dynamic-page.component';
-import { DynamicComponentModel } from '../services/model/dynamic-page.model';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { RouteMeta, injectLoad } from '@analogjs/router';
+import { MetadataRouteResolverService } from '../services/metadata-route-resolver.service';
 import { RouteResolverService } from '../services/route-resolver.service';
+import { Title } from '@angular/platform-browser';
+import { map } from 'rxjs/operators';
+import { load } from './[...slug].server';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { DynamicComponentModel } from '../services/model/dynamic-page.model';
+import { DynamicPageComponent } from '../components/dynamic-page/dynamic-page.component';
+import { PlatformService } from '../services/platform.service';
+
+export const routeMeta: RouteMeta = {
+  meta: async (route, state) => {
+    const platform = inject(PlatformService);
+
+    if (platform.isServer) {
+      const resolverService = inject(MetadataRouteResolverService);
+      return await resolverService.getMetaByUrl(state.url);
+    }
+    return [];
+  }
+};
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-cms-core',
   standalone: true,
   template: `
     <app-dynamic-page [components]="this.components" />
 
-    <a href="/about">To About</a>
+    <p>
+      <a href="/about">About me</a>
+    </p>
   `,
   styleUrl: '../css/index.page.css',
   imports: [
+    CommonModule,
     DynamicPageComponent,
-  ],
+  ]
 })
-export default class HomeComponent {
+export default class CmsCoreComponent {
 
   private readonly route = inject(Router);
   readonly slug = this.route.url;
 
   pageTitle = inject(Title);
   routeResolverService = inject(RouteResolverService);
+  components : DynamicComponentModel[] = [];
 
   pageData = toSignal(injectLoad<typeof load>(), { requireSync: true });
-  components : DynamicComponentModel[] = [];
 
   constructor() {
 
