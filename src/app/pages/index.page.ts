@@ -46,24 +46,28 @@ export default class HomeComponent implements OnInit {
     const pageData = this.pageData();
 
     if (pageData !== undefined) {
-      this.routeResolverService.mapPageConfigurationToDynamicPageModel(pageData)
-          .pipe(
-            map(pageModel => {
-              this.pageTitle.setTitle(pageModel.title);
-              this.components = pageModel.components;
-              return pageModel.components;
-            })
-          )
-          .subscribe()
+      const pageModel = this.routeResolverService.buildPageModel(pageData);
+      this.pageTitle.setTitle(pageModel.title);
+      this.components = pageModel.components;
+
+      // this.routeResolverService.mapPageConfigurationToDynamicPageModel(pageData)
+      //     .pipe(
+      //       map(pageModel => {
+      //         this.pageTitle.setTitle(pageModel.title);
+      //         this.components = pageModel.components;
+      //         return pageModel.components;
+      //       })
+      //     )
+      //     .subscribe()
     }
   }
 
-  async ngOnInit() {
-    const apiUrl = `https://vhdev.proxy.beeceptor.com/page?route=/`;
-    const tmp = this.httpClient.get<MarsPageModel>(apiUrl)
-      .pipe(
-        tap((x) => console.log('ng on init', x))
-      )
-      .subscribe();
+  ngOnInit() {
+  //   const apiUrl = `https://vhdev.proxy.beeceptor.com/vercel/page?route=/`;
+  //   const tmp = this.httpClient.get<MarsPageModel>(apiUrl)
+  //     .pipe(
+  //       tap((x) => console.log('ng on init', x))
+  //     )
+  //     .subscribe();
   }
 }

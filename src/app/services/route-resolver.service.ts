@@ -2,6 +2,12 @@ import { Observable, from } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { MarsPageModel } from './model/mars-page.model';
 import { DynamicPageModel } from './model/dynamic-page.model';
+import { FooterComponent } from '../components/footer/footer.component';
+import { FirstComponent } from '../components/first/first.component';
+import { HeaderComponent } from '../components/header/header.component';
+import { ImageSliderComponent } from '../components/image-slider/image-slider.component';
+import { SecondComponent } from '../components/second/second.component';
+import { ThirdComponent } from '../components/third/third.component';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +15,47 @@ import { DynamicPageModel } from './model/dynamic-page.model';
 export class RouteResolverService {
 
   constructor() { }
+
+  buildPageModel(pageModel: MarsPageModel) : DynamicPageModel {
+
+    const dynamicPageModel: DynamicPageModel = {
+      title: '',
+      components: [],
+    }
+
+    dynamicPageModel.title = pageModel.title;
+
+    for (let component of pageModel?.components) {
+      const componentType = this.loadComponentStatic(component.componentName);
+      if (componentType === undefined)
+        continue;
+
+      dynamicPageModel.components.push({
+        componentType: componentType
+      });
+    }
+
+    return dynamicPageModel;
+  }
+
+  private loadComponentStatic(name: string) : any {
+    switch (name) {
+      case 'header':
+        return HeaderComponent;
+      case 'footer':
+        return FooterComponent;
+      case 'first':
+        return FirstComponent;
+      case 'second':
+        return SecondComponent;
+      case 'third':
+        return ThirdComponent;
+      case 'image-slider':
+        return ImageSliderComponent;
+      default:
+       return undefined;
+    }
+  }
 
   mapPageConfigurationToDynamicPageModel(pageModel: MarsPageModel) : Observable<DynamicPageModel> {
 

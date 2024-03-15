@@ -14,7 +14,7 @@ export const load = async ({
   try {
     console.log('load page config', '/');
 
-    const apiUrl = `https://vhdev.proxy.beeceptor.com/page?route=/`;
+    const apiUrl = `https://vhdev.proxy.beeceptor.com/vercel/page?route=/`;
     const pageModel = await fetch<MarsPageModel>(apiUrl, { ignoreResponseError: true })
       .catch(() => {
         return undefined;
