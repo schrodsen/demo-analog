@@ -23,7 +23,7 @@ export class ImageSliderComponent implements OnInit {
   @Input() productCode: string = '';
   @Input() images: ImageTagModel[] = [];
 
-  data = toSignal(injectLoad<typeof load>(), { requireSync: true });
+  //data = toSignal(injectLoad<typeof load>(), { requireSync: true });
 
   private httpClient = inject(HttpClient);
 
@@ -33,16 +33,17 @@ export class ImageSliderComponent implements OnInit {
   activeImg$ = this.activeImage as Observable<ImageTagModel | null>;
 
   constructor() {
-    console.log('ctor image slider', this.data());
-    //this.getImages();
+    //console.log('ctor image slider', this.data());
   }
 
   ngOnInit() {
-    const c = this.data()?.components.find(x => x.componentName === 'image-slider');
-    console.log('component data', c)
+    this.getImages();
 
-    this.images = c?.data.images as ImageTagModel[];
-    this.activeImage.next(this.images[0]);
+    // const c = this.data()?.components.find(x => x.componentName === 'image-slider');
+    // console.log('component data', c)
+
+    // this.images = c?.data.images as ImageTagModel[];
+    // this.activeImage.next(this.images[0]);
   }
 
   onNext() {
