@@ -12,6 +12,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DynamicComponentModel } from '../services/model/dynamic-page.model';
 import { DynamicPageComponent } from '../components/dynamic-page/dynamic-page.component';
 import { PlatformService } from '../services/platform.service';
+import { HeaderComponent } from '../components/header/header.component';
+import { FooterComponent } from '../components/footer/footer.component';
 
 export const routeMeta: RouteMeta = {
   meta: async (route, state) => {
@@ -29,8 +31,9 @@ export const routeMeta: RouteMeta = {
   selector: 'app-cms-core',
   standalone: true,
   template: `
+    <app-header></app-header>
     <app-dynamic-page [components]="this.components" />
-
+    <app-footer></app-footer>
     <p>
       <a href="/about">About me</a>
     </p>
@@ -39,6 +42,8 @@ export const routeMeta: RouteMeta = {
   imports: [
     CommonModule,
     DynamicPageComponent,
+    HeaderComponent,
+    FooterComponent,
   ]
 })
 export default class CmsCoreComponent {
