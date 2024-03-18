@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { DynamicComponentModel } from 'src/app/services/model/dynamic-page.model';
 
 @Component({
@@ -8,14 +8,16 @@ import { DynamicComponentModel } from 'src/app/services/model/dynamic-page.model
   template: `
     <div class="dynamic-container">
       @for (item of components; track item) {
-        <ng-container *ngComponentOutlet="item.componentType" />
+        <ng-template *ngComponentOutlet="item.componentType; inputs: item.inputs" />
       }
     </div>
   `,
   styleUrl: './dynamic-page.component.css',
   imports: [
     CommonModule
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { 'ngSkipHydration': 'true' }
 })
 export class DynamicPageComponent implements OnInit {
 

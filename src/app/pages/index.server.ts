@@ -20,24 +20,24 @@ export const load = async ({
         return undefined;
       });
 
-    // if (pageModel !== undefined) {
+    if (pageModel !== undefined) {
 
-    //   for (let component of pageModel.components) {
-    //     if (component.componentName !== 'image-slider') {
-    //       continue;
-    //     }
+      for (let component of pageModel.components) {
+        if (component.componentName !== 'image-slider') {
+          continue;
+        }
 
-    //     const apiUrlSlider = `https://vhdev.proxy.beeceptor.com/slider/${component.componentId}`;
-    //     const sliderModel = await fetch<ImageSliderModel>(apiUrlSlider, { ignoreResponseError: true })
-    //       .catch(() => {
-    //         return undefined;
-    //       });
+        const apiUrlSlider = `https://vhdev.proxy.beeceptor.com/slider/${component.componentId}`;
+        const sliderModel = await fetch<ImageSliderModel>(apiUrlSlider, { ignoreResponseError: true })
+          .catch(() => {
+            return undefined;
+          });
 
-    //     console.log('slider model', sliderModel)
-    //     component.data = sliderModel;
-    //   }
-    // }
-
+        console.log('slider model', sliderModel)
+        component.data = sliderModel;
+      }
+    }
+    console.log('pageModel', pageModel)
     return pageModel;
   }
   catch {

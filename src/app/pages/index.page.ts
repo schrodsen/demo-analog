@@ -12,7 +12,6 @@ import { DynamicComponentModel } from '../services/model/dynamic-page.model';
 import { RouteResolverService } from '../services/route-resolver.service';
 import { HeaderComponent } from '../components/header/header.component';
 import { FooterComponent } from '../components/footer/footer.component';
-import { MarsPageModel } from '../services/model/mars-page.model';
 
 @Component({
   selector: 'app-home',

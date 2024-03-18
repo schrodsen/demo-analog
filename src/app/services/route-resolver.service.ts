@@ -31,7 +31,8 @@ export class RouteResolverService {
         continue;
 
       dynamicPageModel.components.push({
-        componentType: componentType
+        componentType: componentType,
+        inputs: { guid: component.componentId }
       });
     }
 
@@ -74,7 +75,8 @@ export class RouteResolverService {
           continue;
 
         dynamicPageModel.components.push({
-          componentType: componentType
+          componentType: componentType,
+          inputs: { guid: component.componentId }
         });
       }
       resolve(dynamicPageModel);

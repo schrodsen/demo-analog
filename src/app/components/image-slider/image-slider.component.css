@@ -71,3 +71,14 @@
   border: 1px solid black;
   padding: 0;
 }
+
+.loading-container {
+  position: absolute;
+  top: 40px;
+  left: 40%;
+  right: 40%;
+  bottom: 40px;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+}
